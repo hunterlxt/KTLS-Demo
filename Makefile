@@ -1,9 +1,9 @@
 all: server client
 
 server:
-	g++ server.cc -o server -lssl -lcrypto
+	gcc server.c -o server -I./openssl/include -L./openssl -lssl -lcrypto
 
 client:
-	g++ client.cc -o client -lssl -lcrypto
+	gcc client.c -o client -I./openssl/include -L./openssl -lssl -lcrypto
 clean: 
 	rm -f server client
