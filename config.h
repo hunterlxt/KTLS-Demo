@@ -13,29 +13,8 @@
 
 // fd must be connected
 int ktls_enable(SSL *ssl, int fd) {
-    struct tls12_crypto_info_aes_gcm_128 tx, rx;
 
-    tx.info.version = TLS_1_2_VERSION;
-    tx.info.cipher_type = TLS_CIPHER_AES_GCM_128;
-    rx.info.version = TLS_1_2_VERSION;
-    rx.info.cipher_type = TLS_CIPHER_AES_GCM_128;
-
-    unsigned char *writeKey = SSL_get_ktls_key(ssl, 0);
-    unsigned char *readKey = SSL_get_ktls_key(ssl, 1);
-    unsigned char *writeIV = SSL_get_ktls_iv(ssl, 0);
-    unsigned char *readIV = SSL_get_ktls_iv(ssl, 1);
-    unsigned char *writeSeq = SSL_get_ktls_sequence(ssl, 0);
-    unsigned char *readSeq = SSL_get_ktls_sequence(ssl, 1);
-    
-    memcpy(tx.iv, writeIV + 4, TLS_CIPHER_AES_GCM_128_IV_SIZE);
-    memcpy(tx.rec_seq, writeSeq, TLS_CIPHER_AES_GCM_128_REC_SEQ_SIZE);
-    memcpy(tx.key, writeKey, TLS_CIPHER_AES_GCM_128_KEY_SIZE);
-    memcpy(tx.salt, writeIV, TLS_CIPHER_AES_GCM_128_SALT_SIZE);
-
-    memcpy(rx.iv, readIV + 4, TLS_CIPHER_AES_GCM_128_IV_SIZE);
-    memcpy(rx.rec_seq, readSeq, TLS_CIPHER_AES_GCM_128_REC_SEQ_SIZE);
-    memcpy(rx.key, readKey, TLS_CIPHER_AES_GCM_128_KEY_SIZE);
-    memcpy(rx.salt, readIV, TLS_CIPHER_AES_GCM_128_SALT_SIZE);
+    struct tls12_crypto_info_aes_gcm_128 *tx = SSL_enable_ktls(ssl, SSL3_CHANGE_CIPHER_SERVER_READ);
 
     int flag = 0;
     flag = setsockopt(fd, SOL_TCP, TCP_ULP, "tls", sizeof("tls"));
@@ -43,14 +22,9 @@ int ktls_enable(SSL *ssl, int fd) {
         printf("enable tls failed\n");
         return 0;
     }
-    flag = setsockopt(fd, SOL_TLS, 1, &tx, sizeof(tx));
+    flag = setsockopt(fd, SOL_TLS, 1, tx, sizeof(struct tls12_crypto_info_aes_gcm_128));
     if (flag != 0) {
         printf("tx set error:%d\n", flag);
-        return 0;
-    }
-    flag = setsockopt(fd, SOL_TLS, 2, &rx, sizeof(rx));
-    if (flag != 0) {
-        printf("rx set error:%d\n", flag);
         return 0;
     }
     return 1;
