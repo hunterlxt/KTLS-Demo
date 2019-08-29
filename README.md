@@ -1,6 +1,6 @@
 # KTLS-Demo
 
-This is a server demo using Kernel TLS encryption.
+This is a server demo using Kernel TLS encryption. The details of using KTLS are encapsulated in openssl, so using `SSL_sendfile` directly can reduce a lot of mental burden. If you want to learn more about how to enable kernel tls, you can check this repo: [OpenSSL with SSL_sendfile](https://github.com/hunterlxt/openssl)
 
 KTLS feature must be enabled.
 
@@ -20,7 +20,7 @@ To build the code, just `make`. It will generate private key and certificates fi
 ```shell
 git submodule update --init
 cd ./openssl
-./config enable-ktls && make -j6 && make test
+./config && make -j6
 cd ..
 export LD_LIBRARY_PATH=./openssl
 make

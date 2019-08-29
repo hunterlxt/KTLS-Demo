@@ -1,4 +1,4 @@
 [submodule "openssl"]
 	path = openssl
 	url = https://github.com/hunterlxt/openssl.git
-	branch = TXXT/ktls
+	branch = TXXT/ktls-over-1_1_1
