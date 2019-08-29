@@ -28,25 +28,16 @@ int main(int argc, char *argv[]) {
     if (SSL_accept(ssl) <= 0) {
         printf("SSL fail to accecpt\n");
     } else {
-        // BIO *bio = SSL_get_wbio(ssl);
-        // if (bio == NULL)
-        //     printf("bio is null\n");
-        // auto ret = BIO_ctrl(bio, BIO_CTRL_GET_KTLS_SEND, 0, NULL);
-        // printf("ret: %d\n", ret);
-        // if (BIO_get_ktls_send(bio))
-        //     printf("Using KTLS...\n");
-        // else
-        //     printf("Not using KTLS...\n");
         int bytes = 0;
+        // write test
         const char reply[] = "This is SSL server";
         bytes = SSL_write(ssl, reply, strlen(reply));
         printf("Bytes send(%d)\n", bytes);
-
-        if (!ktls_enable(ssl, fd)) {
-            printf("KTLS enable failed\n");
+        // sendfile test
+        if (!SSL_enable_ktls(ssl, fd, TX_MODE)) {
             exit(-1);
         }
-        bytes = sendfile(fd, filefd, 0, 100);
+        bytes = SSL_sendfile(ssl, filefd, 0, 100);
         printf("Bytes send(%d)\n", bytes);
     }
 

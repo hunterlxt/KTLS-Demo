@@ -11,25 +11,6 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-// fd must be connected
-int ktls_enable(SSL *ssl, int fd) {
-
-    struct tls12_crypto_info_aes_gcm_128 *tx = SSL_enable_ktls(ssl, SSL3_CHANGE_CIPHER_SERVER_READ);
-
-    int flag = 0;
-    flag = setsockopt(fd, SOL_TCP, TCP_ULP, "tls", sizeof("tls"));
-    if (flag != 0) {
-        printf("enable tls failed\n");
-        return 0;
-    }
-    flag = setsockopt(fd, SOL_TLS, 1, tx, sizeof(struct tls12_crypto_info_aes_gcm_128));
-    if (flag != 0) {
-        printf("tx set error:%d\n", flag);
-        return 0;
-    }
-    return 1;
-}
-
 int create_listen_socket(int port) {
     struct sockaddr_in addr;
 
