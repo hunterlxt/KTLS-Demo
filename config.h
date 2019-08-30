@@ -12,9 +12,10 @@
 #include <time.h>
 #include <unistd.h>
 
-/* NOTE: data_size <= size of your test file */
-size_t data_size = 16384;
-size_t round_count = 1024 * 512;
+/* NOTE: data_size <= size of your test file
+ * data_size is integral multiple of 1024 bytes */
+size_t data_size = 16 * 1024;
+size_t round_count = 1000000;
 
 int create_listen_socket(int port) {
     struct sockaddr_in addr;
