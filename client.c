@@ -28,26 +28,23 @@ int main(int argc, char *argv[]) {
         exit(-1);
     }
 
-    char buf[100];
+    // receive data from server until read 0 bytes
+    char buf[data_size];
+    size_t buf_len = sizeof(buf);
+    size_t count = 0;
+    size_t sum_bytes = 0;
     int bytes = 0;
-
-    memset(buf, 0, sizeof(buf));
-    bytes = SSL_read(ssl, buf, sizeof(buf));
-    if (bytes < 0) {
-        printf("SSL Read error: %d\n", bytes);
-        ERR_print_errors_fp(stderr);
-        exit(-1);
-    }
-    printf("Msg recv(%d): %s\n", bytes, buf);
-
-    memset(buf, 0, sizeof(buf));
-    bytes = SSL_read(ssl, buf, sizeof(buf));
-    if (bytes < 0) {
-        printf("SSL Read error: %d\n", bytes);
-        ERR_print_errors_fp(stderr);
-        exit(-1);
-    }
-    printf("Msg recv(%d): %s\n", bytes, buf);
+    do {
+        bytes = SSL_read(ssl, buf, buf_len);
+        if (bytes < 0) {
+            printf("SSL Read error: %d\n", bytes);
+            ERR_print_errors_fp(stderr);
+            exit(-1);
+        }
+        sum_bytes += bytes;
+        count++;
+    } while (bytes > 0);
+    printf("Round counts: %ld\nMsg recv: %ld KB\n", count - 1, sum_bytes/1024);
 
     SSL_free(ssl);
     SSL_CTX_free(ctx);

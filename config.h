@@ -9,7 +9,12 @@
 #include <string.h>
 #include <sys/sendfile.h>
 #include <sys/socket.h>
+#include <time.h>
 #include <unistd.h>
+
+/* NOTE: data_size <= size of your test file */
+size_t data_size = 16384;
+size_t round_count = 1024 * 512;
 
 int create_listen_socket(int port) {
     struct sockaddr_in addr;
